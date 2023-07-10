@@ -2,7 +2,7 @@ import { OffChainOracle, OffChainOracles, OnChainOracles } from '@/services'
 
 const maticGasStation: OffChainOracle = {
   name: 'maticGasStation',
-  url: 'https://gasstation-mainnet.matic.network',
+  url: 'https://gasstation.polygon.technology/v2',
   instantPropertyName: 'fastest',
   fastPropertyName: 'fast',
   standardPropertyName: 'standard',
