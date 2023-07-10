@@ -295,6 +295,7 @@ export class LegacyGasPriceOracle implements LegacyOracle {
     } = oracle
 
     const response = await axios.get(url, { timeout: this.configuration.timeout })
+    console.log('Response-Ask-Oracle:', response)
 
     if (response.status === 200) {
       const gas = additionalDataProperty ? response.data[additionalDataProperty] : response.data
@@ -309,6 +310,7 @@ export class LegacyGasPriceOracle implements LegacyOracle {
         standard: parseFloat(gas[standardPropertyName]) / denominator,
         low: parseFloat(gas[lowPropertyName]) / denominator,
       }
+      console.log('GasPrices:', gasPrices)
       return LegacyGasPriceOracle.normalize(gasPrices)
     } else {
       throw new Error(`Fetch gasPrice from ${name} oracle failed. Trying another one...`)
