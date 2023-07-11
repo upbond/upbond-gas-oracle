@@ -22,7 +22,6 @@ import { MULTIPLIERS, DEFAULT_GAS_PRICE } from './constants'
 
 export class LegacyGasPriceOracle implements LegacyOracle {
   static getMedianGasPrice(gasPrices: GasPrice[]): GasPrice {
-    console.log('getMedianGasPrice')
     const medianGasPrice: GasPrice = DEFAULT_GAS_PRICE
 
     const results: Record<GasPriceKey, number[]> = {
@@ -56,7 +55,6 @@ export class LegacyGasPriceOracle implements LegacyOracle {
   }
 
   static getMultipliedPrices(gasPrice: number): GasPrice {
-    console.log('getMultipliedPrices')
     return {
       instant: gasPrice * MULTIPLIERS.instant,
       fast: gasPrice * MULTIPLIERS.fast,
@@ -66,16 +64,11 @@ export class LegacyGasPriceOracle implements LegacyOracle {
   }
 
   static normalize(_gas: GasPrice): GasPrice {
-    console.log('normalize')
     const format = {
       groupSeparator: '',
       decimalSeparator: '.',
     }
-
-    console.log('Normalize_Gas:', JSON.stringify(_gas))
-
     const gas: GasPrice = { ..._gas }
-    console.log('{Normalize_gas}', gas)
     for (const type of Object.keys(gas) as (keyof GasPrice)[]) {
       gas[type] = Number(new BigNumber(gas[type]).toFormat(GWEI_PRECISION, format))
     }
@@ -84,12 +77,10 @@ export class LegacyGasPriceOracle implements LegacyOracle {
   }
 
   static getCategorize(gasPrice: number): GasPrice {
-    console.log('getCategorize')
     return LegacyGasPriceOracle.normalize(LegacyGasPriceOracle.getMultipliedPrices(gasPrice))
   }
 
   static getGasPriceFromResponse(payload: GetGasPriceFromRespInput): number {
-    console.log('getGasPriceFromResponse')
     const { response, fetcherName, denominator = GWEI } = payload
     let fastGasPrice = new BigNumber(response)
     if (fastGasPrice.isZero()) {
@@ -152,7 +143,6 @@ export class LegacyGasPriceOracle implements LegacyOracle {
   }
 
   public async fetchGasPricesOnChain(): Promise<number> {
-    console.log('fetchGasPricesOnChain')
     for (const oracle of Object.values(this.onChainOracles)) {
       const { name, callData, contract, denominator, rpc } = oracle
 
@@ -179,7 +169,6 @@ export class LegacyGasPriceOracle implements LegacyOracle {
   }
 
   public async fetchGasPriceFromRpc(): Promise<number> {
-    console.log('fetchGasPriceFromRpc')
     try {
       const { status, data } = await this.fetcher.makeRpcCall<{ result: string | number }>({
         params: [],
@@ -201,13 +190,10 @@ export class LegacyGasPriceOracle implements LegacyOracle {
   }
 
   public async fetchGasPricesOffChain(shouldGetMedian = true): Promise<GasPrice> {
-    console.log('fetchGasPricesOffChain')
     if (shouldGetMedian) {
-      console.log('FetachGasPricesOffChain-ShouldGetMedian')
       return await this.fetchMedianGasPriceOffChain()
     }
 
-    console.log('OracleObjec-InFetchGasPricesOffChain', this.offChainOracles)
     for (const oracle of Object.values(this.offChainOracles)) {
       try {
         return await this.askOracle(oracle)
@@ -220,8 +206,6 @@ export class LegacyGasPriceOracle implements LegacyOracle {
   }
 
   public async fetchMedianGasPriceOffChain(): Promise<GasPrice> {
-    console.log('fetchMedianGasPriceOffChain')
-
     const promises: Promise<GasPrice>[] = []
 
     for (const oracle of Object.values(this.offChainOracles) as OffChainOracle[]) {
@@ -246,28 +230,20 @@ export class LegacyGasPriceOracle implements LegacyOracle {
   }
 
   public async gasPrices(fallbackGasPrices?: GasPrice, shouldGetMedian = true): Promise<GasPrice> {
-    console.log('GAS-PRICES')
     if (!this.lastGasPrice) {
       this.lastGasPrice = fallbackGasPrices || this.configuration.fallbackGasPrices
     }
 
     const cacheKey = this.LEGACY_KEY(this.configuration.chainId)
-    console.log('CacheKey-GasPrices:', cacheKey)
     const cachedFees = await this.cache.get(cacheKey)
-    console.log('CachedFees-GasPrices:', cachedFees)
 
     if (cachedFees) {
-      console.log('IS CHACHED FEES')
       return cachedFees
     }
     if (Object.keys(this.offChainOracles).length > 0) {
-      console.log('Object.keys(this.offChainOracles) is 0')
-      console.log('ShouldGetMedian:', shouldGetMedian)
       try {
         this.lastGasPrice = await this.fetchGasPricesOffChain(shouldGetMedian)
-        console.log('this.lastGasPrice:', JSON.stringify(this.lastGasPrice))
         if (this.configuration.shouldCache) {
-          console.log('this.configuration.shouldCache')
           await this.cache.set(cacheKey, this.lastGasPrice)
         }
         return this.lastGasPrice
@@ -305,7 +281,6 @@ export class LegacyGasPriceOracle implements LegacyOracle {
   }
 
   public async askOracle(oracle: OffChainOracle): Promise<GasPrice> {
-    console.log('askOracle')
     const {
       url,
       name,
@@ -318,27 +293,20 @@ export class LegacyGasPriceOracle implements LegacyOracle {
     } = oracle
 
     const response = await axios.get(url, { timeout: this.configuration.timeout })
-    console.log('Response-Ask-Oracle:', response)
 
     if (response.status === 200) {
       const gas = additionalDataProperty ? response.data[additionalDataProperty] : response.data
-      console.log('Gas-AskOracle:', JSON.stringify(gas))
-      console.log('InstantPropertyName:', JSON.stringify(instantPropertyName))
-      console.log('FastPropertyName:', JSON.stringify(fastPropertyName))
-      console.log('StandardPropertyName:', JSON.stringify(standardPropertyName))
-      console.log('LowPropertyName:', JSON.stringify(lowPropertyName))
-      console.log('Denominator:', JSON.stringify(denominator))
+
       if (Number(gas[fastPropertyName]) === 0) {
         throw new Error(`${name} oracle provides corrupted values`)
       }
 
       const gasPrices: GasPrice = {
-        instant: parseFloat(gas[instantPropertyName]) / denominator,
-        fast: parseFloat(gas[fastPropertyName]) / denominator,
-        standard: parseFloat(gas[standardPropertyName]) / denominator,
-        low: parseFloat(gas[lowPropertyName]) / denominator,
+        instant: parseFloat(gas[instantPropertyName]['maxFee']) / denominator,
+        fast: parseFloat(gas[fastPropertyName]['maxFee']) / denominator,
+        standard: parseFloat(gas[standardPropertyName]['maxFee']) / denominator,
+        low: parseFloat(gas[lowPropertyName]['maxFee']) / denominator,
       }
-      console.log('GasPrices-askOracle:', gasPrices)
       return LegacyGasPriceOracle.normalize(gasPrices)
     } else {
       throw new Error(`Fetch gasPrice from ${name} oracle failed. Trying another one...`)
