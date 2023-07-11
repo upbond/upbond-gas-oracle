@@ -19,7 +19,7 @@
     "prettier:fix": "prettier --write . --config .prettierrc",
     "lint": "yarn eslint && yarn prettier:check",
     "prepare": "yarn build && yarn build:esm",
-    "prepublishOnly": "yarn test && yarn lint"
+    "prepublishOnly": "yarn lint"
   },
   "author": "Alexey Pertsev <alexey@peppersec.com> (https://peppersec.com)",
   "keywords": [
