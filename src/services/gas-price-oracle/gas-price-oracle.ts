@@ -89,7 +89,9 @@ export class GasPriceOracle implements OracleProvider {
     const { fallbackGasPrices, shouldGetMedian } = payload
 
     const estimate = await this.eip1559.estimateFees(fallbackGasPrices?.estimated)
+    console.log('Estimate-InGasPrices-With-Estimate', estimate)
     const gasPrices = await this.legacy.gasPrices(fallbackGasPrices?.gasPrices, shouldGetMedian)
+    console.log('GasPrices-InGasPrices-', gasPrices)
 
     return {
       estimate,

@@ -140,13 +140,14 @@ export class Eip1559GasPriceOracle implements EstimateOracle {
   private async calculateFees({ baseFee, feeHistory }: CalculateFeesParams): Promise<EstimatedGasPrice> {
     console.log('calculateFees')
     const estimatedPriorityFee = await this.getPriorityFromChain(feeHistory)
-
+    console.log('calculateFees-From-GetPriorityFromChain', estimatedPriorityFee)
     const { highest: maxPriorityFeePerGas } = findMax([
       estimatedPriorityFee ?? BG_ZERO,
       new BigNumber(this.configuration.minPriority),
     ])
+    console.log('FindMax:', maxPriorityFeePerGas)
     const maxFeePerGas = baseFee.plus(maxPriorityFeePerGas)
-
+    console.log('MaxFeePerGas-InCalculateFees:', maxFeePerGas)
     if (this.checkIsGreaterThanMax(maxFeePerGas) || this.checkIsGreaterThanMax(maxPriorityFeePerGas)) {
       throw new Error('Estimated gas fee was much higher than expected, erroring')
     }
