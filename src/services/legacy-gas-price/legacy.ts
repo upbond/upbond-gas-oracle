@@ -72,7 +72,10 @@ export class LegacyGasPriceOracle implements LegacyOracle {
       decimalSeparator: '.',
     }
 
+    console.log('Normalize_Gas:', JSON.stringify(_gas))
+
     const gas: GasPrice = { ..._gas }
+    console.log('{Normalize_gas}', gas)
     for (const type of Object.keys(gas) as (keyof GasPrice)[]) {
       gas[type] = Number(new BigNumber(gas[type]).toFormat(GWEI_PRECISION, format))
     }
@@ -257,11 +260,12 @@ export class LegacyGasPriceOracle implements LegacyOracle {
       console.log('IS CHACHED FEES')
       return cachedFees
     }
-
     if (Object.keys(this.offChainOracles).length > 0) {
       console.log('Object.keys(this.offChainOracles) is 0')
+      console.log('ShouldGetMedian:', shouldGetMedian)
       try {
         this.lastGasPrice = await this.fetchGasPricesOffChain(shouldGetMedian)
+        console.log('this.lastGasPrice:', JSON.stringify(this.lastGasPrice))
         if (this.configuration.shouldCache) {
           console.log('this.configuration.shouldCache')
           await this.cache.set(cacheKey, this.lastGasPrice)
@@ -318,7 +322,12 @@ export class LegacyGasPriceOracle implements LegacyOracle {
 
     if (response.status === 200) {
       const gas = additionalDataProperty ? response.data[additionalDataProperty] : response.data
-
+      console.log('Gas-AskOracle:', JSON.stringify(gas))
+      console.log('InstantPropertyName:', JSON.stringify(instantPropertyName))
+      console.log('FastPropertyName:', JSON.stringify(fastPropertyName))
+      console.log('StandardPropertyName:', JSON.stringify(standardPropertyName))
+      console.log('LowPropertyName:', JSON.stringify(lowPropertyName))
+      console.log('Denominator:', JSON.stringify(denominator))
       if (Number(gas[fastPropertyName]) === 0) {
         throw new Error(`${name} oracle provides corrupted values`)
       }
