@@ -22,6 +22,7 @@ import { MULTIPLIERS, DEFAULT_GAS_PRICE } from './constants'
 
 export class LegacyGasPriceOracle implements LegacyOracle {
   static getMedianGasPrice(gasPrices: GasPrice[]): GasPrice {
+    console.log('getMedianGasPrice')
     const medianGasPrice: GasPrice = DEFAULT_GAS_PRICE
 
     const results: Record<GasPriceKey, number[]> = {
@@ -55,6 +56,7 @@ export class LegacyGasPriceOracle implements LegacyOracle {
   }
 
   static getMultipliedPrices(gasPrice: number): GasPrice {
+    console.log('getMultipliedPrices')
     return {
       instant: gasPrice * MULTIPLIERS.instant,
       fast: gasPrice * MULTIPLIERS.fast,
@@ -64,6 +66,7 @@ export class LegacyGasPriceOracle implements LegacyOracle {
   }
 
   static normalize(_gas: GasPrice): GasPrice {
+    console.log('normalize')
     const format = {
       groupSeparator: '',
       decimalSeparator: '.',
@@ -78,10 +81,12 @@ export class LegacyGasPriceOracle implements LegacyOracle {
   }
 
   static getCategorize(gasPrice: number): GasPrice {
+    console.log('getCategorize')
     return LegacyGasPriceOracle.normalize(LegacyGasPriceOracle.getMultipliedPrices(gasPrice))
   }
 
   static getGasPriceFromResponse(payload: GetGasPriceFromRespInput): number {
+    console.log('getGasPriceFromResponse')
     const { response, fetcherName, denominator = GWEI } = payload
     let fastGasPrice = new BigNumber(response)
     if (fastGasPrice.isZero()) {
@@ -144,6 +149,7 @@ export class LegacyGasPriceOracle implements LegacyOracle {
   }
 
   public async fetchGasPricesOnChain(): Promise<number> {
+    console.log('fetchGasPricesOnChain')
     for (const oracle of Object.values(this.onChainOracles)) {
       const { name, callData, contract, denominator, rpc } = oracle
 
@@ -170,6 +176,7 @@ export class LegacyGasPriceOracle implements LegacyOracle {
   }
 
   public async fetchGasPriceFromRpc(): Promise<number> {
+    console.log('fetchGasPriceFromRpc')
     try {
       const { status, data } = await this.fetcher.makeRpcCall<{ result: string | number }>({
         params: [],
@@ -191,6 +198,7 @@ export class LegacyGasPriceOracle implements LegacyOracle {
   }
 
   public async fetchGasPricesOffChain(shouldGetMedian = true): Promise<GasPrice> {
+    console.log('fetchGasPricesOffChain')
     if (shouldGetMedian) {
       return await this.fetchMedianGasPriceOffChain()
     }
@@ -207,6 +215,8 @@ export class LegacyGasPriceOracle implements LegacyOracle {
   }
 
   public async fetchMedianGasPriceOffChain(): Promise<GasPrice> {
+    console.log('fetchMedianGasPriceOffChain')
+
     const promises: Promise<GasPrice>[] = []
 
     for (const oracle of Object.values(this.offChainOracles) as OffChainOracle[]) {
@@ -231,6 +241,7 @@ export class LegacyGasPriceOracle implements LegacyOracle {
   }
 
   public async gasPrices(fallbackGasPrices?: GasPrice, shouldGetMedian = true): Promise<GasPrice> {
+    console.log('GAS-PRICES')
     if (!this.lastGasPrice) {
       this.lastGasPrice = fallbackGasPrices || this.configuration.fallbackGasPrices
     }
@@ -283,6 +294,7 @@ export class LegacyGasPriceOracle implements LegacyOracle {
   }
 
   public async askOracle(oracle: OffChainOracle): Promise<GasPrice> {
+    console.log('askOracle')
     const {
       url,
       name,
