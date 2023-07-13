@@ -162,7 +162,7 @@ export class LegacyGasPriceOracle implements LegacyOracle {
         }
         throw new Error(`Fetch gasPrice from ${name} oracle failed. Trying another one...`)
       } catch (e) {
-        console.error(e.message)
+        // console.error(e.message)
       }
     }
     throw new Error('All oracles are down. Probably a network error.')
@@ -184,7 +184,7 @@ export class LegacyGasPriceOracle implements LegacyOracle {
 
       throw new Error(`Fetch gasPrice from default RPC failed..`)
     } catch (e) {
-      console.error(e.message)
+      // console.error(e.message)
       throw new Error('Default RPC is down. Probably a network error.')
     }
   }
@@ -198,7 +198,7 @@ export class LegacyGasPriceOracle implements LegacyOracle {
       try {
         return await this.askOracle(oracle)
       } catch (e) {
-        console.info(`${oracle} has error - `, e.message)
+        // console.info(`${oracle} has error - `, e.message)
         continue
       }
     }
@@ -248,7 +248,7 @@ export class LegacyGasPriceOracle implements LegacyOracle {
         }
         return this.lastGasPrice
       } catch (e) {
-        console.error('Failed to fetch gas prices from offchain oracles...')
+        // console.error('Failed to fetch gas prices from offchain oracles...')
       }
     }
 
@@ -262,7 +262,7 @@ export class LegacyGasPriceOracle implements LegacyOracle {
         }
         return this.lastGasPrice
       } catch (e) {
-        console.error('Failed to fetch gas prices from onchain oracles...')
+        // console.error('Failed to fetch gas prices from onchain oracles...')
       }
     }
 
@@ -275,7 +275,7 @@ export class LegacyGasPriceOracle implements LegacyOracle {
       }
       return this.lastGasPrice
     } catch (e) {
-      console.error('Failed to fetch gas prices from default RPC. Last known gas will be returned')
+      // console.error('Failed to fetch gas prices from default RPC. Last known gas will be returned')
     }
     return LegacyGasPriceOracle.normalize(this.lastGasPrice)
   }
