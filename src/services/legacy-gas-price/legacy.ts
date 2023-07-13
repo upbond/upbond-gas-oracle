@@ -198,7 +198,7 @@ export class LegacyGasPriceOracle implements LegacyOracle {
       try {
         return await this.askOracle(oracle)
       } catch (e) {
-        console.info(`${oracle} has error - `, e.message)
+        // console.info(`${oracle} has error - `, e.message)
         continue
       }
     }
