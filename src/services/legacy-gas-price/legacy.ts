@@ -292,26 +292,36 @@ export class LegacyGasPriceOracle implements LegacyOracle {
       instantPropertyName,
       standardPropertyName,
       additionalDataProperty,
-    } = oracle
+    } = oracle;
 
-    const response = await axios.get(url, { timeout: this.configuration.timeout })
+    try {
+      const response = await axios.get(url, { timeout: this.configuration.timeout });
 
-    if (response.status === 200) {
-      const gas = additionalDataProperty ? response.data[additionalDataProperty] : response.data
+      if (response.status === 200) {
+        const gas = additionalDataProperty ? response.data[additionalDataProperty] : response.data;
 
-      if (Number(gas[fastPropertyName]) === 0) {
-        throw new Error(`${name} oracle provides corrupted values`)
+        if (Number(gas[fastPropertyName]) === 0) {
+          throw new Error(`${name} oracle provides corrupted values`);
+        }
+
+        const gasPrices: GasPrice = {
+          instant: parseFloat(gas[instantPropertyName]['maxFee']) / denominator,
+          fast: parseFloat(gas[fastPropertyName]['maxFee']) / denominator,
+          standard: parseFloat(gas[standardPropertyName]['maxFee']) / denominator,
+          low: parseFloat(gas[lowPropertyName]['maxFee']) / denominator,
+        };
+        return LegacyGasPriceOracle.normalize(gasPrices);
+      } else {
+        throw new Error(`Fetch gasPrice from ${name} oracle failed. Trying another one...`);
       }
-
-      const gasPrices: GasPrice = {
-        instant: parseFloat(gas[instantPropertyName]['maxFee']) / denominator,
-        fast: parseFloat(gas[fastPropertyName]['maxFee']) / denominator,
-        standard: parseFloat(gas[standardPropertyName]['maxFee']) / denominator,
-        low: parseFloat(gas[lowPropertyName]['maxFee']) / denominator,
-      }
-      return LegacyGasPriceOracle.normalize(gasPrices)
-    } else {
-      throw new Error(`Fetch gasPrice from ${name} oracle failed. Trying another one...`)
+    } catch (err) {
+      // Handle the error here by sending it to Sentry
+      Sentry.captureException(err);
+      // You can also log the error to the console for debugging purposes if needed
+      console.error('Error fetching gasPrice from oracle:', err);
+      // Return a default gas price or take other appropriate action
+      return DEFAULT_GAS_PRICE;
     }
   }
+
 }
