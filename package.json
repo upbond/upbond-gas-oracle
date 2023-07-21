@@ -59,7 +59,7 @@
     "typescript": "^4.7.4"
   },
   "dependencies": {
-    "@sentry/node": "^7.59.3",
+    "@sentry/node": "^7.58.1",
     "axios": "^0.21.2",
     "bignumber.js": "^9.0.0",
     "node-cache": "^5.1.2"
