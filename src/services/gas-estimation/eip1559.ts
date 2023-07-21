@@ -4,7 +4,7 @@ import { FeeHistory, Block } from '@/types'
 import { Config, EstimateOracle, EstimatedGasPrice, CalculateFeesParams, GasEstimationOptionsPayload } from './types'
 
 import { ChainId, NETWORKS } from '@/config'
-import { RpcFetcher, NodeJSCache } from '@/services'
+import { RpcFetcher, NodeJSCache, isSentryReady } from '@/services'
 import { findMax, fromNumberToHex, fromWeiToGwei, getMedian } from '@/utils'
 import { BG_ZERO, DEFAULT_BLOCK_DURATION, PERCENT_MULTIPLIER } from '@/constants'
 
@@ -76,7 +76,9 @@ export class Eip1559GasPriceOracle implements EstimateOracle {
 
       return fees
     } catch (err) {
-      Sentry.captureException(err);
+      if (isSentryReady()) {
+        Sentry.captureException(err); // Check if Sentry is ready before capturing the exception.
+      }
       if (fallbackGasPrices) {
         return fallbackGasPrices
       }
@@ -132,7 +134,9 @@ export class Eip1559GasPriceOracle implements EstimateOracle {
 
       return fromWeiToGwei(data.result)
     } catch (err) {
-      Sentry.captureException(err);
+      if (isSentryReady()) {
+        Sentry.captureException(err); // Check if Sentry is ready before capturing the exception.
+      }
       return this.calculatePriorityFeeEstimate(feeHistory)
     }
   }
