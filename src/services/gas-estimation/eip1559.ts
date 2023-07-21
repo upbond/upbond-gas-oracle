@@ -10,6 +10,8 @@ import { BG_ZERO, DEFAULT_BLOCK_DURATION, PERCENT_MULTIPLIER } from '@/constants
 
 import { DEFAULT_PRIORITY_FEE, PRIORITY_FEE_INCREASE_BOUNDARY, FEE_HISTORY_BLOCKS, FEE_HISTORY_PERCENTILE } from './constants'
 
+import * as Sentry from '@sentry/node';
+
 // !!! MAKE SENSE ALL CALCULATIONS IN GWEI !!!
 export class Eip1559GasPriceOracle implements EstimateOracle {
   public configuration: Config = {
@@ -74,6 +76,7 @@ export class Eip1559GasPriceOracle implements EstimateOracle {
 
       return fees
     } catch (err) {
+      Sentry.captureException(err);
       if (fallbackGasPrices) {
         return fallbackGasPrices
       }
@@ -129,6 +132,7 @@ export class Eip1559GasPriceOracle implements EstimateOracle {
 
       return fromWeiToGwei(data.result)
     } catch (err) {
+      Sentry.captureException(err);
       return this.calculatePriorityFeeEstimate(feeHistory)
     }
   }

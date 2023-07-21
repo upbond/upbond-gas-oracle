@@ -20,6 +20,8 @@ import { GWEI, DEFAULT_TIMEOUT, GWEI_PRECISION, DEFAULT_BLOCK_DURATION } from '@
 
 import { MULTIPLIERS, DEFAULT_GAS_PRICE } from './constants'
 
+import * as Sentry from '@sentry/node';
+
 export class LegacyGasPriceOracle implements LegacyOracle {
   static getMedianGasPrice(gasPrices: GasPrice[]): GasPrice {
     const medianGasPrice: GasPrice = DEFAULT_GAS_PRICE
@@ -162,7 +164,7 @@ export class LegacyGasPriceOracle implements LegacyOracle {
         }
         throw new Error(`Fetch gasPrice from ${name} oracle failed. Trying another one...`)
       } catch (e) {
-        // console.error(e.message)
+        Sentry.captureException(e);
       }
     }
     throw new Error('All oracles are down. Probably a network error.')
@@ -184,7 +186,7 @@ export class LegacyGasPriceOracle implements LegacyOracle {
 
       throw new Error(`Fetch gasPrice from default RPC failed..`)
     } catch (e) {
-      // console.error(e.message)
+      Sentry.captureException(e);
       throw new Error('Default RPC is down. Probably a network error.')
     }
   }
@@ -198,7 +200,7 @@ export class LegacyGasPriceOracle implements LegacyOracle {
       try {
         return await this.askOracle(oracle)
       } catch (e) {
-        // console.info(`${oracle} has error - `, e.message)
+        Sentry.captureException(e);
         continue
       }
     }
@@ -248,7 +250,7 @@ export class LegacyGasPriceOracle implements LegacyOracle {
         }
         return this.lastGasPrice
       } catch (e) {
-        // console.error('Failed to fetch gas prices from offchain oracles...')
+        Sentry.captureException(e);
       }
     }
 
@@ -262,7 +264,7 @@ export class LegacyGasPriceOracle implements LegacyOracle {
         }
         return this.lastGasPrice
       } catch (e) {
-        // console.error('Failed to fetch gas prices from onchain oracles...')
+        Sentry.captureException(e);
       }
     }
 
@@ -275,7 +277,7 @@ export class LegacyGasPriceOracle implements LegacyOracle {
       }
       return this.lastGasPrice
     } catch (e) {
-      // console.error('Failed to fetch gas prices from default RPC. Last known gas will be returned')
+      Sentry.captureException(e);
     }
     return LegacyGasPriceOracle.normalize(this.lastGasPrice)
   }
