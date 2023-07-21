@@ -1,8 +1,9 @@
 // Import Sentry and initialize it
 import * as Sentry from "@sentry/browser";
-
+console.log(process.env.SENTRY_DSN,"THE DSN")
 Sentry.init({
   dsn: process.env.SENTRY_DSN,
+  debug:true,
   integrations: [
     new Sentry.BrowserTracing({
       // Set 'tracePropagationTargets' to control for which URLs distributed tracing should be enabled
