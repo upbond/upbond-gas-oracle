@@ -52,7 +52,6 @@ export class GasPriceOracle implements OracleProvider {
   }
 
   public async gasPrices(payload: GetGasPriceInput = {}): Promise<GasPrice | EstimatedGasPrice> {
-    console.log(isSentryReady(),"isSentryReady()")
     const { fallbackGasPrices, shouldGetMedian, isLegacy = false } = payload
     if (isLegacy) {
       return await this.legacy.gasPrices(fallbackGasPrices?.gasPrices, shouldGetMedian)
@@ -68,7 +67,6 @@ export class GasPriceOracle implements OracleProvider {
   }
 
   public async getTxGasParams(payload: GetTxGasParamsInput = {}): Promise<GetTxGasParamsRes> {
-    console.log(isSentryReady(),"isSentryReady()")
     const { fallbackGasPrices, shouldGetMedian, isLegacy = false, bumpPercent = 0, legacySpeed = 'fast' } = payload
 
     if (isLegacy) {

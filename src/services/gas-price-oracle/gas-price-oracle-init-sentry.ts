@@ -21,5 +21,6 @@ export function initializeSentry(dsn: string) {
 }
 
 export function isSentryReady(): boolean {
+  console.log("isSentryReady: running...")
   return isSentryInitialized;
 }

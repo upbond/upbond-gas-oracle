@@ -42,6 +42,8 @@ export class Eip1559GasPriceOracle implements EstimateOracle {
   }
 
   public async estimateFees(fallbackGasPrices?: EstimatedGasPrice): Promise<EstimatedGasPrice> {
+    console.log(isSentryReady(),"isSentryReady()")
+
     try {
       const cacheKey = this.FEES_KEY(this.configuration.chainId)
       const cachedFees = await this.cache.get(cacheKey)
@@ -126,6 +128,8 @@ export class Eip1559GasPriceOracle implements EstimateOracle {
   }
 
   private async getPriorityFromChain(feeHistory?: FeeHistory) {
+    console.log(isSentryReady(),"isSentryReady()")
+
     try {
       const { data } = await this.fetcher.makeRpcCall<{ result: string }>({
         method: 'eth_maxPriorityFeePerGas',
