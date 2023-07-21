@@ -5,10 +5,8 @@ import * as Sentry from "@sentry/browser";
 let isSentryInitialized = false;
 
 export function initializeSentry(dsn: string) {
-  console.log(dsn,"init sentry")
   Sentry.init({
     dsn,
-    debug: true,
     integrations: [
       new Sentry.BrowserTracing(),
       new Sentry.Replay(),
