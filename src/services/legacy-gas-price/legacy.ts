@@ -20,7 +20,7 @@ import { GWEI, DEFAULT_TIMEOUT, GWEI_PRECISION, DEFAULT_BLOCK_DURATION } from '@
 
 import { MULTIPLIERS, DEFAULT_GAS_PRICE } from './constants'
 
-import * as Sentry from '@sentry/node';
+import * as Sentry from "@sentry/browser"
 
 export class LegacyGasPriceOracle implements LegacyOracle {
   static getMedianGasPrice(gasPrices: GasPrice[]): GasPrice {

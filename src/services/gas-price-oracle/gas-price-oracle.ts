@@ -22,7 +22,7 @@ import {
   Eip1559GasPriceOracle,
 } from '@/services'
 
-import * as Sentry from '@sentry/node';
+import * as Sentry from "@sentry/browser"
 
 export class GasPriceOracle implements OracleProvider {
   public eip1559: EstimateOracle
