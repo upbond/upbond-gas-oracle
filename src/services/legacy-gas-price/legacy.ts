@@ -20,7 +20,7 @@ import { GWEI, DEFAULT_TIMEOUT, GWEI_PRECISION, DEFAULT_BLOCK_DURATION } from '@
 
 import { MULTIPLIERS, DEFAULT_GAS_PRICE } from './constants'
 
-import * as Sentry from "@sentry/browser"
+import * as Sentry from '@sentry/browser'
 
 export class LegacyGasPriceOracle implements LegacyOracle {
   static getMedianGasPrice(gasPrices: GasPrice[]): GasPrice {
@@ -145,7 +145,6 @@ export class LegacyGasPriceOracle implements LegacyOracle {
   }
 
   public async fetchGasPricesOnChain(): Promise<number> {
-
     for (const oracle of Object.values(this.onChainOracles)) {
       const { name, callData, contract, denominator, rpc } = oracle
 
@@ -166,7 +165,7 @@ export class LegacyGasPriceOracle implements LegacyOracle {
         throw new Error(`Fetch gasPrice from ${name} oracle failed. Trying another one...`)
       } catch (e) {
         if (isSentryReady()) {
-          Sentry.captureException(e); // Check if Sentry is ready before capturing the exception.
+          Sentry.captureException(e) // Check if Sentry is ready before capturing the exception.
         }
       }
     }
@@ -174,7 +173,6 @@ export class LegacyGasPriceOracle implements LegacyOracle {
   }
 
   public async fetchGasPriceFromRpc(): Promise<number> {
-
     try {
       const { status, data } = await this.fetcher.makeRpcCall<{ result: string | number }>({
         params: [],
@@ -191,7 +189,7 @@ export class LegacyGasPriceOracle implements LegacyOracle {
       throw new Error(`Fetch gasPrice from default RPC failed..`)
     } catch (e) {
       if (isSentryReady()) {
-        Sentry.captureException(e); // Check if Sentry is ready before capturing the exception.
+        Sentry.captureException(e) // Check if Sentry is ready before capturing the exception.
       }
       throw new Error('Default RPC is down. Probably a network error.')
     }
@@ -207,7 +205,7 @@ export class LegacyGasPriceOracle implements LegacyOracle {
         return await this.askOracle(oracle)
       } catch (e) {
         if (isSentryReady()) {
-          Sentry.captureException(e); // Check if Sentry is ready before capturing the exception.
+          Sentry.captureException(e) // Check if Sentry is ready before capturing the exception.
         }
         continue
       }
@@ -240,7 +238,6 @@ export class LegacyGasPriceOracle implements LegacyOracle {
   }
 
   public async gasPrices(fallbackGasPrices?: GasPrice, shouldGetMedian = true): Promise<GasPrice> {
-
     if (!this.lastGasPrice) {
       this.lastGasPrice = fallbackGasPrices || this.configuration.fallbackGasPrices
     }
@@ -260,7 +257,7 @@ export class LegacyGasPriceOracle implements LegacyOracle {
         return this.lastGasPrice
       } catch (e) {
         if (isSentryReady()) {
-          Sentry.captureException(e); // Check if Sentry is ready before capturing the exception.
+          Sentry.captureException(e) // Check if Sentry is ready before capturing the exception.
         }
       }
     }
@@ -276,7 +273,7 @@ export class LegacyGasPriceOracle implements LegacyOracle {
         return this.lastGasPrice
       } catch (e) {
         if (isSentryReady()) {
-          Sentry.captureException(e); // Check if Sentry is ready before capturing the exception.
+          Sentry.captureException(e) // Check if Sentry is ready before capturing the exception.
         }
       }
     }
@@ -291,7 +288,7 @@ export class LegacyGasPriceOracle implements LegacyOracle {
       return this.lastGasPrice
     } catch (e) {
       if (isSentryReady()) {
-        Sentry.captureException(e); // Check if Sentry is ready before capturing the exception.
+        Sentry.captureException(e) // Check if Sentry is ready before capturing the exception.
       }
     }
     return LegacyGasPriceOracle.normalize(this.lastGasPrice)
