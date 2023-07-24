@@ -20,7 +20,10 @@ import {
   EstimatedGasPrice,
   LegacyGasPriceOracle,
   Eip1559GasPriceOracle,
+  isSentryReady,
 } from '@/services'
+
+import * as Sentry from "@sentry/browser"
 
 export class GasPriceOracle implements OracleProvider {
   public eip1559: EstimateOracle
@@ -55,7 +58,10 @@ export class GasPriceOracle implements OracleProvider {
     }
     try {
       return await this.eip1559.estimateFees(fallbackGasPrices?.estimated)
-    } catch {
+    } catch (err) {
+      if (isSentryReady()) {
+        Sentry.captureException(err); // Check if Sentry is ready before capturing the exception.
+      }
       return await this.legacy.gasPrices(fallbackGasPrices?.gasPrices, shouldGetMedian)
     }
   }
@@ -75,7 +81,10 @@ export class GasPriceOracle implements OracleProvider {
         maxFeePerGas: fromGweiToWeiHex(bumpOnPercent(eipParams.maxFeePerGas, bumpPercent)),
         maxPriorityFeePerGas: fromGweiToWeiHex(bumpOnPercent(eipParams.maxPriorityFeePerGas, bumpPercent)),
       }
-    } catch {
+    } catch (err) {
+      if (isSentryReady()) {
+        Sentry.captureException(err); // Check if Sentry is ready before capturing the exception.
+      }
       const legacyGasPrice = await this.legacy.gasPrices(fallbackGasPrices?.gasPrices, shouldGetMedian)
 
       return { gasPrice: fromGweiToWeiHex(bumpOnPercent(legacyGasPrice[legacySpeed], bumpPercent)) }

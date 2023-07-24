@@ -4,11 +4,13 @@ import { FeeHistory, Block } from '@/types'
 import { Config, EstimateOracle, EstimatedGasPrice, CalculateFeesParams, GasEstimationOptionsPayload } from './types'
 
 import { ChainId, NETWORKS } from '@/config'
-import { RpcFetcher, NodeJSCache } from '@/services'
+import { RpcFetcher, NodeJSCache, isSentryReady } from '@/services'
 import { findMax, fromNumberToHex, fromWeiToGwei, getMedian } from '@/utils'
 import { BG_ZERO, DEFAULT_BLOCK_DURATION, PERCENT_MULTIPLIER } from '@/constants'
 
 import { DEFAULT_PRIORITY_FEE, PRIORITY_FEE_INCREASE_BOUNDARY, FEE_HISTORY_BLOCKS, FEE_HISTORY_PERCENTILE } from './constants'
+
+import * as Sentry from "@sentry/browser"
 
 // !!! MAKE SENSE ALL CALCULATIONS IN GWEI !!!
 export class Eip1559GasPriceOracle implements EstimateOracle {
@@ -40,6 +42,7 @@ export class Eip1559GasPriceOracle implements EstimateOracle {
   }
 
   public async estimateFees(fallbackGasPrices?: EstimatedGasPrice): Promise<EstimatedGasPrice> {
+
     try {
       const cacheKey = this.FEES_KEY(this.configuration.chainId)
       const cachedFees = await this.cache.get(cacheKey)
@@ -74,6 +77,9 @@ export class Eip1559GasPriceOracle implements EstimateOracle {
 
       return fees
     } catch (err) {
+      if (isSentryReady()) {
+        Sentry.captureException(err); // Check if Sentry is ready before capturing the exception.
+      }
       if (fallbackGasPrices) {
         return fallbackGasPrices
       }
@@ -121,6 +127,7 @@ export class Eip1559GasPriceOracle implements EstimateOracle {
   }
 
   private async getPriorityFromChain(feeHistory?: FeeHistory) {
+
     try {
       const { data } = await this.fetcher.makeRpcCall<{ result: string }>({
         method: 'eth_maxPriorityFeePerGas',
@@ -129,6 +136,9 @@ export class Eip1559GasPriceOracle implements EstimateOracle {
 
       return fromWeiToGwei(data.result)
     } catch (err) {
+      if (isSentryReady()) {
+        Sentry.captureException(err); // Check if Sentry is ready before capturing the exception.
+      }
       return this.calculatePriorityFeeEstimate(feeHistory)
     }
   }
