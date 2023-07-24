@@ -23,7 +23,7 @@ import {
   isSentryReady,
 } from '@/services'
 
-import * as Sentry from "@sentry/browser"
+import * as Sentry from '@sentry/browser'
 
 export class GasPriceOracle implements OracleProvider {
   public eip1559: EstimateOracle
@@ -60,7 +60,7 @@ export class GasPriceOracle implements OracleProvider {
       return await this.eip1559.estimateFees(fallbackGasPrices?.estimated)
     } catch (err) {
       if (isSentryReady()) {
-        Sentry.captureException(err); // Check if Sentry is ready before capturing the exception.
+        Sentry.captureException(err) // Check if Sentry is ready before capturing the exception.
       }
       return await this.legacy.gasPrices(fallbackGasPrices?.gasPrices, shouldGetMedian)
     }
@@ -83,7 +83,7 @@ export class GasPriceOracle implements OracleProvider {
       }
     } catch (err) {
       if (isSentryReady()) {
-        Sentry.captureException(err); // Check if Sentry is ready before capturing the exception.
+        Sentry.captureException(err) // Check if Sentry is ready before capturing the exception.
       }
       const legacyGasPrice = await this.legacy.gasPrices(fallbackGasPrices?.gasPrices, shouldGetMedian)
 
