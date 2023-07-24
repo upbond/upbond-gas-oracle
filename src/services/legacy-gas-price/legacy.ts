@@ -145,7 +145,6 @@ export class LegacyGasPriceOracle implements LegacyOracle {
   }
 
   public async fetchGasPricesOnChain(): Promise<number> {
-    console.log(isSentryReady(),"isSentryReady()")
 
     for (const oracle of Object.values(this.onChainOracles)) {
       const { name, callData, contract, denominator, rpc } = oracle
@@ -175,7 +174,6 @@ export class LegacyGasPriceOracle implements LegacyOracle {
   }
 
   public async fetchGasPriceFromRpc(): Promise<number> {
-    console.log(isSentryReady(),"isSentryReady()")
 
     try {
       const { status, data } = await this.fetcher.makeRpcCall<{ result: string | number }>({
@@ -242,7 +240,6 @@ export class LegacyGasPriceOracle implements LegacyOracle {
   }
 
   public async gasPrices(fallbackGasPrices?: GasPrice, shouldGetMedian = true): Promise<GasPrice> {
-    console.log(isSentryReady(),"isSentryReady()")
 
     if (!this.lastGasPrice) {
       this.lastGasPrice = fallbackGasPrices || this.configuration.fallbackGasPrices

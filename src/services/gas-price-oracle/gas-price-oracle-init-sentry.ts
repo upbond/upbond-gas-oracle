@@ -4,7 +4,7 @@ import * as Sentry from "@sentry/browser";
 
 let isSentryInitialized = false;
 
-export function initializeSentry(dsn: string) {
+export function initializeSentry(dsn: string | undefined) {
   Sentry.init({
     dsn,
     integrations: [
@@ -21,6 +21,5 @@ export function initializeSentry(dsn: string) {
 }
 
 export function isSentryReady(): boolean {
-  console.log("isSentryReady: running...")
   return isSentryInitialized;
 }
