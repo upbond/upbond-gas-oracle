@@ -2,7 +2,7 @@ import { OffChainOracle, OffChainOracles, OnChainOracle, OnChainOracles } from '
 
 const ethgasstation: OffChainOracle = {
   name: 'ethgasstation',
-  url: 'https://etherchain.org/api/gasnow',
+  url: 'https://beaconcha.in/api/v1/execution/gasnow',
   instantPropertyName: 'rapid',
   fastPropertyName: 'fast',
   standardPropertyName: 'standard',
@@ -13,7 +13,7 @@ const ethgasstation: OffChainOracle = {
 
 const etherchain: OffChainOracle = {
   name: 'etherchain',
-  url: 'https://etherchain.org/api/gasnow',
+  url: 'https://beaconcha.in/api/v1/execution/gasnow',
   instantPropertyName: 'rapid',
   fastPropertyName: 'fast',
   standardPropertyName: 'standard',
